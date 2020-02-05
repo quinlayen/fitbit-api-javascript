@@ -1,0 +1,62 @@
+const express = require('express');
+const qs = require('qs');
+const request = require('sync-request')
+const querystring = require('querystring')
+const cons = require('consolidate')
+const __ = require('underscore')
+const app = express();
+
+
+
+const redirect_uri = "https://a81808e0.ngrok.io"
+
+app.engine('html', cons.underscore);
+app.set('view engine', 'html');
+app.set('views', 'files/client');
+
+
+let client = {
+    "client_id": "22BBPF",
+    "client_secret": "0745afef365cca38b6759ec044f894fd"
+}
+
+app.get('/', (req, res) =>{
+    
+    const code = req.query.code;
+    console.log('code: ', code)
+    let form_data = qs.stringify({
+        grant_type: 'authorization_code',
+        code,
+        redirect_uri
+    });
+
+    let headers = {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Authorization': `Basic ${encodeClientCredentials(client.client_id, client.client_secret)}`
+    }
+   
+    let tokRes = request('POST', 'https://api.fitbit.com/oauth2/token', {
+        body: form_data,
+        headers
+    })
+
+    console.log('form_data: ', form_data)
+    console.log('headers: ', headers)
+    console.log('tokRes: ' ,tokRes)
+    //if (tokRes.statusCode == tokRes.statusCode >= 200 && tokRes.statusCode < 300) {
+        let body = JSON.parse(tokRes.getBody())
+    
+        access_token = body.access_token;
+        console.log('Got access token: %s', body)
+    res.render('index', {access_token})
+    //}
+
+
+     //tokRes = request
+})
+
+var encodeClientCredentials = (clientId, clientSecret) => {
+	return new Buffer.from(querystring.escape(clientId) + ':' + querystring.escape(clientSecret)).toString('base64');
+};
+
+app.listen(80, () => console.log('listening on port 80'))
