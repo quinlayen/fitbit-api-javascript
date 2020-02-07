@@ -8,7 +8,7 @@ const app = express();
 
 
 
-const redirect_uri = "https://a81808e0.ngrok.io"
+const redirect_uri = "https://1ae167e6.ngrok.io/callback"
 
 app.engine('html', cons.underscore);
 app.set('view engine', 'html');
@@ -17,10 +17,10 @@ app.set('views', 'files/client');
 
 let client = {
     "client_id": "22BBPF",
-    "client_secret": "0745afef365cca38b6759ec044f894fd"
+    "client_secret": "80e6d8dd5336d0a612de1d64067351f4"
 }
 
-app.get('/', (req, res) =>{
+app.get('/callback', (req, res) =>{
     
     const code = req.query.code;
     console.log('code: ', code)
@@ -48,7 +48,7 @@ app.get('/', (req, res) =>{
     
         access_token = body.access_token;
         console.log('Got access token: %s', body)
-    res.render('index', {access_token})
+    res.send('<h1>access_token</h1>')
     //}
 
 
